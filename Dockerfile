@@ -1,5 +1,11 @@
 FROM continuumio/anaconda3
 
+RUN apt update \
+ && apt install -y liblttng-ust0 \
+                   libcurl4 \
+                   libcurl4-openssl-dev \
+ && rm -rf /var/lib/apt/lists/*
+
 # Set user and group
 ARG uid=1000
 ARG gid=1000
@@ -22,5 +28,8 @@ ENV PATH /opt/conda/envs/env/bin:$PATH
 RUN ~/.conda/envs/py37/bin/pip install azure-ai-ml \
                                        azureml-core \
                                        sklearn \
-                                       azureml-train-automl-client 
+                                       azureml-train-automl-client \
+                                       azureml-dataprep[pandas]
 
+COPY src /src
+ENV PYTHONPATH "/src:$PYTHONPATH"
