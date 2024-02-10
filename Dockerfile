@@ -4,6 +4,7 @@ RUN apt update \
  && apt install -y liblttng-ust0 \
                    libcurl4 \
                    libcurl4-openssl-dev \
+                   gcc g++ \
  && rm -rf /var/lib/apt/lists/*
 
 # Set user and group
@@ -19,17 +20,15 @@ WORKDIR /home/automl
 # from https://gist.github.com/scmx/242caa249b0ea343e2588adea14479e6
 COPY .docker-prompt .
 
-RUN conda create -n py37 python=3.7 pip
-RUN echo "source activate py37" >> ~/.bashrc \
+RUN conda create -n py38 python=3.8 pip
+RUN echo "source activate py38" >> ~/.bashrc \
  && echo "source ~/.docker-prompt" >> ~/.bashrc
 
 ENV PATH /opt/conda/envs/env/bin:$PATH
 
-RUN ~/.conda/envs/py37/bin/pip install azure-ai-ml \
-                                       azureml-core \
-                                       sklearn \
-                                       azureml-train-automl-client \
-                                       azureml-dataprep[pandas]
+COPY requirements.txt .
+RUN ~/.conda/envs/py38/bin/pip install -r requirements.txt
+RUN ~/.conda/envs/py38/bin/pip install -r ~/.conda/envs/py38/lib/python3.8/site-packages/azureml/automl/core/validated_linux_requirements.txt
 
 COPY src /src
 ENV PYTHONPATH "/src:$PYTHONPATH"

@@ -1,0 +1,6 @@
+azure-ai-ml
+azureml-core
+azureml-train-automl-client
+azureml-dataprep[pandas]
+scikit-learn
+joblib
